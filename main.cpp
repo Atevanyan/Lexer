@@ -64,8 +64,11 @@ int main(int argc, const char * argv[]) {
 	mylist.pop_front();
 
 	//Output file without comments
+	ofstream somefile;
+
+	somefile.open("NoComments.txt");
 	for (list<char>::iterator it = mylist.begin(); it != mylist.end(); ++it) {
-		cout << *it << " ";
+		somefile << *it << " ";
 	}
 
 	cout << "\ndone" << "/t";
