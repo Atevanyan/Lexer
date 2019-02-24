@@ -16,8 +16,7 @@ const string keywords[] = {"asm", "else", "new", "this", "auto", "enum", "operat
 "static_cast", "volatile", "do", "long", "struct", "wchar_t", "double", "mutable", "switch", "while", 
 "dynamic_cast", "namespace", "template",};
 
-const string operators[] = {
-	"=", "==", "+", "-", "*", "/", ">", "<", ">=", "<=", "|", "&&" };
+const string operators[] = {"=", "==", "+", "-", "*", "/", ">", "<", ">=", "<=", "|", "&&" };
 
 string constants[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"};
 
