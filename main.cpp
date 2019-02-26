@@ -58,7 +58,7 @@ bool isConstant(string input)
 
 bool isSeparator(string input)
 {
-	if (int i = 0; i < separators->size(); i++)
+	for (int i = 0; i < separators->size(); i++)
 	{
 		if (input == separators[i])
 			return true;
@@ -70,7 +70,7 @@ bool isIdentifier(string input)
 {
 	for (int i = 0; i < identifiers->size(); i++)
 	{
-		if (input == identifier[i])
+		if (input == identifiers[i])
 			return true;
 	}
 	return false;
