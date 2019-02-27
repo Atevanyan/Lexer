@@ -8,13 +8,23 @@
 
 using namespace std;
 
-const string keywords[] = {
-	"if", "ifend", "put", "get", "else",
-	"while", "whileend", "return", "true", "false",
-	"function", "int", "boolean", "real", "string", "do", "char"};
+const string keywords[] = { "asm", "else", "new", "this", "auto", "enum", "operator", "throw", "bool",
+"explicit", "private", "true", "break", "export", "protected", "try", "case", "extern", "public",
+"typedef", "catch", "false", "register", "typeid", "char", "float", "reinterpret_cast", "typename",
+"class", "for", "return", "union", "const", "friend", "short", "unsigned", "const_cast", "goto", "signed",
+"using", "continue", "if", "sizeof",    "virtual", "default", "inline", "static", "void", "delete", "int",
+"static_cast", "volatile", "do", "long", "struct", "wchar_t", "double", "mutable", "switch", "while",
+"dynamic_cast", "namespace", "template", };
 
-const string operators[] = {
-	"=", "==", "+", "-", "*", "/", ">", "<", ">=", "<=", "|", "&&" };
+const string operators[] = { "=", "==", "+", "-", "*", "/", ">", "<", ">=", "<=", "|", "&&" };
+
+string constants[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
+
+string separators[] = { "[", "]", "(", ")", "{", "}", ",", ";", ":", ".", "#" };
+
+string identifiers[] = { "_", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
+"p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I",
+"J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
 
 bool isKeyword(string input)
 {
@@ -36,28 +46,64 @@ bool isOperator(string input)
 	return false;
 }
 
-int main(int argc, const char * argv[]) {
+bool isConstant(string input)
+{
+	for (int i = 0; i < constants->size(); i++)
+	{
+		if (input == constants[i])
+			return true;
+	}
+	return false;
+}
+
+bool isSeparator(string input)
+{
+	for (int i = 0; i < separators->size(); i++)
+	{
+		if (input == separators[i])
+			return true;
+	}
+	return false;
+}
+
+bool isIdentifier(string input)
+{
+	for (int i = 0; i < identifiers->size(); i++)
+	{
+		if (input == identifiers[i])
+			return true;
+	}
+	return false;
+}
+
+int main() {
 
 	char read;
 	string lex;
 	list<char>mylist;
 
-	ifstream infile("/Users/eugenelee/Documents/School Stuff/CPSC 323/sample input file for assignment 1.txt");
-
-	if (infile.is_open()) {
-		while (!infile.eof()) {
+	ifstream infile("input.txt");
+	infile >> noskipws;
+	if (infile.is_open()) 
+	{
+		while (!infile.eof()) 
+		{
 			infile >> read;
 			mylist.push_back(read);
 		}
 	}
 
 	//Remove comments
-	for (list<char>::iterator it = mylist.begin(); it != mylist.end(); ++it) {
+	for (list<char>::const_iterator it = mylist.begin(); it != mylist.end(); ++it) 
+	{
 		if (*it == '!') {
-			do {
-				mylist.erase(it);
-				it++;
+			do 
+			{
+				//it = mylist.erase(it);
+				mylist.pop_back();
+				*it++;
 			} while (*it != '!');
+			it = mylist.erase(it);
 		}
 	}
 	//Pops remaining exclamation point off of stack
@@ -67,10 +113,15 @@ int main(int argc, const char * argv[]) {
 	ofstream somefile;
 
 	somefile.open("NoComments.txt");
-	for (list<char>::iterator it = mylist.begin(); it != mylist.end(); ++it) {
-		somefile << *it << " ";
+	for (list<char>::iterator it = mylist.begin(); it != mylist.end(); ++it) 
+	{
+		cout << *it;
+		somefile << *it;
 	}
 
+
 	cout << "\ndone" << "/t";
+
+	system("PAUSE");
 	return 0;
 }
