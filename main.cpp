@@ -8,23 +8,23 @@
 
 using namespace std;
 
-const string keywords[] = {"asm", "else", "new", "this", "auto", "enum", "operator", "throw", "bool", 
-"explicit", "private", "true", "break", "export", "protected", "try", "case", "extern", "public", 
-"typedef", "catch", "false", "register", "typeid", "char", "float", "reinterpret_cast", "typename", 
-"class", "for", "return", "union", "const", "friend", "short", "unsigned", "const_cast", "goto", "signed", 
-"using", "continue", "if", "sizeof",    "virtual", "default", "inline", "static", "void", "delete", "int", 
-"static_cast", "volatile", "do", "long", "struct", "wchar_t", "double", "mutable", "switch", "while", 
-"dynamic_cast", "namespace", "template",};
+const string keywords[] = { "asm", "else", "new", "this", "auto", "enum", "operator", "throw", "bool",
+"explicit", "private", "true", "break", "export", "protected", "try", "case", "extern", "public",
+"typedef", "catch", "false", "register", "typeid", "char", "float", "reinterpret_cast", "typename",
+"class", "for", "return", "union", "const", "friend", "short", "unsigned", "const_cast", "goto", "signed",
+"using", "continue", "if", "sizeof",    "virtual", "default", "inline", "static", "void", "delete", "int",
+"static_cast", "volatile", "do", "long", "struct", "wchar_t", "double", "mutable", "switch", "while",
+"dynamic_cast", "namespace", "template", };
 
-const string operators[] = {"=", "==", "+", "-", "*", "/", ">", "<", ">=", "<=", "|", "&&" };
+const string operators[] = { "=", "==", "+", "-", "*", "/", ">", "<", ">=", "<=", "|", "&&" };
 
-string constants[] = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"};
+string constants[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
 
-string separators[] = { "[", "]", "(", ")", "{", "}", ",", ";", ":", ".", "#"};
+string separators[] = { "[", "]", "(", ")", "{", "}", ",", ";", ":", ".", "#" };
 
 string identifiers[] = { "_", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
-    "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I",
-    "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+"p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I",
+"J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
 
 bool isKeyword(string input)
 {
@@ -76,38 +76,52 @@ bool isIdentifier(string input)
 	return false;
 }
 
-int main(int argc, const char * argv[]) {
+int main() {
 
 	char read;
 	string lex;
 	list<char>mylist;
 
-	ifstream infile("/Users/eugenelee/Documents/School Stuff/CPSC 323/sample input file for assignment 1.txt");
-
-	if (infile.is_open()) {
-		while (!infile.eof()) {
+	ifstream infile("input.txt");
+	infile >> noskipws;
+	if (infile.is_open()) 
+	{
+		while (!infile.eof()) 
+		{
 			infile >> read;
 			mylist.push_back(read);
 		}
 	}
 
 	//Remove comments
-	for (list<char>::iterator it = mylist.begin(); it != mylist.end(); ++it) {
+	for (list<char>::const_iterator it = mylist.begin(); it != mylist.end(); ++it) 
+	{
 		if (*it == '!') {
-			do {
-				mylist.erase(it);
-				it++;
+			do 
+			{
+				//it = mylist.erase(it);
+				mylist.pop_back();
+				*it++;
 			} while (*it != '!');
+			it = mylist.erase(it);
 		}
 	}
 	//Pops remaining exclamation point off of stack
 	mylist.pop_front();
 
 	//Output file without comments
-	for (list<char>::iterator it = mylist.begin(); it != mylist.end(); ++it) {
-		cout << *it << " ";
+	ofstream somefile;
+
+	somefile.open("NoComments.txt");
+	for (list<char>::iterator it = mylist.begin(); it != mylist.end(); ++it) 
+	{
+		cout << *it;
+		somefile << *it;
 	}
 
+
 	cout << "\ndone" << "/t";
+
+	system("PAUSE");
 	return 0;
 }
