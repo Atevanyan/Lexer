@@ -18,7 +18,9 @@ const string keywords[] = { "asm", "else", "new", "this", "auto", "enum", "opera
 
 const string operators[] = { "=", "==", "+", "-", "*", "/", ">", "<", ">=", "<=", "|", "&&" };
 
-string separators[] = { "[", "]", "(", ")", "{", "}", ",", ";", ":", ".", "#" };
+char separators[] = { '[', ']' , '(', ')', '{', '}', ',', ';', ':', '#' };
+
+string reals[] = { "1", "2", "3", "4", "5","6","7","8","9","0" };
 
 bool isKeyword(string input)
 {
@@ -40,8 +42,19 @@ bool isOperator(string input)
 	return false;
 }
 
+bool isReal(string input)
+{
+	for (int i = 0; i < (sizeof(reals) / sizeof(*reals)); i++)
+	{
+		if (input == reals[i])
+			return true;
+	//	else if(isdigit(input) )
+	}
+	return false;
+}
 
-bool isSeparator(string input)
+
+bool isSeparator(char input)
 {
 	for (int i = 0; i < (sizeof(separators) / sizeof(*separators)); i++)
 	{
@@ -91,39 +104,91 @@ int main() {
 	somefile.open("NoComments.txt");
 	for (list<char>::iterator it = mylist.begin(); it != mylist.end(); ++it)
 	{
-		cout << *it;
+		//cout << *it;
 		somefile << *it;
 	}
-	
 	somefile.close();
 
 	string temp;
 	//read in from new txt file with no comments
 	ifstream newFile("NoComments.txt");
 
+	ofstream anotherFile;
+	anotherFile.open("Analyze.txt");
+
 	if (newFile.is_open())
 	{
-		cout << "Keyword                       Lexemes" << endl << endl;
+		anotherFile << "Keyword                       Lexemes" << endl << endl;
 		//until we reach the end of the txt doc get one line at a time
 		while (newFile >> temp)
 		{
 
 			if (isKeyword(temp))
 			{
-				cout << "Keyword              =            " << temp << endl;
+				anotherFile << "Keyword              =            " << temp << endl;
 			}
-			else if (isSeparator(temp))
+			else if (isSeparator(temp[0]))
 			{
-				cout << "Seperator            =            " << temp << endl;
+				anotherFile << "Seperator            =            " << temp << endl;
 			}
-			else if(isOperator(temp))
+			else if (isOperator(temp))
 			{
-				cout << "Operator             =            " << temp << endl;
+				anotherFile << "Operator             =            " << temp << endl;
+			}
+			else if (isReal(temp))
+			{
+				anotherFile << "Real                 =            " << temp << endl;
 			}
 			//if not any of the above then assume it is identifier
 			else
 			{
-				cout << "Identifier           =            " << temp << endl;
+
+				//outer loop with check each char in the current string against the separators
+				for (int i = 0; i < (sizeof(separators) / sizeof(*separators)); i++)
+				{
+					//check each char of current string against separator of i
+					for (int j = 0; j < temp.size(); j++)
+					{
+						if (temp[j] == separators[i])
+						{
+							//if a separator is found, split the current string into sub string
+							//output the separator then output each new string
+							anotherFile << "Seperator            =            " << temp[j] << endl;
+
+							//first half of string before separator
+							string string1 = temp.substr(0, j);
+							//second half of string after separator
+							string string2 = temp.substr(j + 1, temp.size());
+
+							//check if any of the new strings are keywords
+							if (isKeyword(string1))
+							{
+								anotherFile << "Keyword              =            " << string1 << endl;
+							}
+							//if not assume it is an identifier
+							else
+							{
+								anotherFile << "Identifier           =             " << string1 << endl;
+							}
+
+							//do same with second half of new string
+							if (isKeyword(string2))
+							{
+								anotherFile << "Keyword              =            " << string2 << endl;
+							}
+							//double check to make sure we arent printing an empty space if the separator came at the end
+							else if (string2 == "")
+							{
+								continue;
+							}
+							else
+							{
+								anotherFile << "Identifier           =             " << string2 << endl;
+							}
+							temp.empty();
+						}
+					}
+				}
 			}
 		}
 	}
