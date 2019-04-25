@@ -1,34 +1,55 @@
-
+//
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
 #include <list>
-
+#include <vector>
 
 using namespace std;
 
-const string keywords[] = { "asm", "else", "new", "this", "auto", "enum", "operator", "throw", "bool",
-"explicit", "private", "true", "break", "export", "protected", "try", "case", "extern", "public",
-"typedef", "catch", "false", "register", "typeid", "char", "float", "reinterpret_cast", "typename",
-"class", "for", "return", "union", "const", "friend", "short", "unsigned", "const_cast", "goto", "signed",
-"using", "continue", "if", "sizeof",    "virtual", "default", "inline", "static", "void", "delete", "int",
-"static_cast", "volatile", "do", "long", "struct", "wchar_t", "double", "mutable", "switch", "while",
-"dynamic_cast", "namespace", "template", };
+vector<string> lexemes;
+int LEXNUM = 0;
 
-const string operators[] = { "=", "==", "+", "-", "*", "/", ">", "<", ">=", "<=", "|", "&&" };
+void reverseStr(string& str)
+{
+	int n = str.length();
 
-string constants[] = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0" };
+	// Swap character starting from two 
+	// corners 
+	for (int i = 0; i < n / 2; i++)
+		swap(str[i], str[n - i - 1]);
+}
 
-string separators[] = { "[", "]", "(", ")", "{", "}", ",", ";", ":", ".", "#" };
+string keywords[] = { "int ", "float ", "bool ", "if ", "else ", "then ", "while ", "whileend ", "do ", "doend ", "for ", "and ", "or ", "function " };
 
-string identifiers[] = { "_", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
-"p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G", "H", "I",
-"J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
+char separators[] = { '(',')','{','}','[',']',',','.',':',';','!','\n' };
+string separators2[] = { "(",")","{","}","[","]",",",".",":",";","!","\n" };
+
+char operators[] = { '+','*','-','<','>','=','/','%'};
+string operators2[] = { "+","*","-","<",">","=","/","%" };
+
+bool isOperator(char input)
+{
+	for (int i = 0; i < (sizeof(operators) / sizeof(*operators)); i++)
+	{
+		if (input == operators[i])
+			return true;
+	}
+	return false;
+}
+bool isOperator(string input)
+{
+	for (int i = 0; i < (sizeof(operators) / sizeof(*operators)); i++)
+	{
+		if (input == operators2[i])
+			return true;
+	}
+	return false;
+}
 
 bool isKeyword(string input)
 {
-	for (int i = 0; i < keywords->size(); i++)
+	for (int i = 0; i < (sizeof(keywords) / sizeof(*keywords)); i++)
 	{
 		if (input == keywords[i])
 			return true;
@@ -36,92 +57,226 @@ bool isKeyword(string input)
 	return false;
 }
 
-bool isOperator(string input)
+bool isSeparator(char input)
 {
-	for (int i = 0; i < operators->size(); i++)
-	{
-		if (input == operators[i])
-			return true;
-	}
-	return false;
-}
-
-bool isConstant(string input)
-{
-	for (int i = 0; i < constants->size(); i++)
-	{
-		if (input == constants[i])
-			return true;
-	}
-	return false;
-}
-
-bool isSeparator(string input)
-{
-	for (int i = 0; i < separators->size(); i++)
+	for (int i = 0; i < (sizeof(separators) / sizeof(*separators)); i++)
 	{
 		if (input == separators[i])
 			return true;
 	}
 	return false;
 }
-
-bool isIdentifier(string input)
+bool isSeparator(string input)
 {
-	for (int i = 0; i < identifiers->size(); i++)
+	for (int i = 0; i < (sizeof(separators) / sizeof(*separators)); i++)
 	{
-		if (input == identifiers[i])
+		if (input == separators2[i])
 			return true;
 	}
 	return false;
 }
 
+list<char>mylist;
+int state = 0;
+int counter = 0;
+
+int char_to_col(char c) {
+
+	if (isdigit(c)) {
+		return 2;
+	}
+	else if (isSeparator(c)) {
+		return 4;
+	}
+	else if (isalpha(c) || c == '$') {
+		return 1;
+	}
+	else {
+		return 3;
+	}
+
+}
+
+void finalState(int state, string filename) {
+	ofstream outfile;
+	outfile.open(filename,std::ofstream::app);
+
+	if (state == 6) {
+		outfile << "Real:	   = ";
+		//state = 0;
+	}
+	else if (state == 7) {
+		outfile << "Operator:	  = ";
+		//state = 0;
+	}
+	else if (state == 8) {
+		outfile << "Seperator:		  = ";
+		//state = 0;
+	}
+	else {
+		cout << "Error: Invalid final state\n";
+	}
+	outfile.close();
+}
+
+//Returns true if keyword, returns false if identifier
+bool checkKeyword(string lexeme) {
+
+	if (isKeyword(lexeme)) 
+	{
+		return true;
+	}
+	else 
+	{
+		return false;
+	}
+}
+
+void DFSM(string filename) {
+	const int STATES = 9;
+	const int INPUTS = 6;
+
+	int table[STATES][INPUTS] = {
+		{ 0,1,2,3,4,4 },    //0 1->char 2->digit 3->operator 4->Separator 5->period
+		{ 0,1,1,5,5,4 },    //1 Maps to end of string when it hits an operator or seperator. goes to seperator if you get a period
+		{ 0,6,2,6,6,2 },    //2 Maps to digit until you reach a seperator, operator or character
+		{ 0,7,7,7,7,4 },    //3 Maps to final state of operator unless you get a period which maps to a seperator
+		{ 0,8,8,8,8,8 },    //4 Maps to final state of seperator
+		{ 0,0,0,0,0,0 },    //5 Reached the end of the string
+		{ 0,0,0,0,0,0 },    //6 Final state for Digits
+		{ 0,0,0,0,0,0 },    //7 Final state for Operators
+		{ 0,0,0,0,0,0 }     //8 Final state for seperators
+	};
+	//if digit after period then go back to float. 
+
+	ofstream myfile;
+	myfile.open("analyzed.txt");
+
+	for (list<char>::iterator it = mylist.begin(); it != mylist.end(); ++it) {
+		int col = char_to_col(*it);
+
+		state = table[state][col];
+		counter++;
+
+		if (state == 4)
+		{
+			state = 8;
+		}
+		if (state == 3)
+		{
+			state = 7;
+		}
+		if (state == 6 || state == 7 || state == 8) {
+			finalState(state, "analyzed.txt");
+			ofstream myfile;
+			counter = 0;
+			state = 0;
+		}
+		else if (state == 5) {
+		//	char* lexeme = new char[counter];
+			string lexeme;
+			list<char>::iterator temp = it;
+			if (isSeparator(*it))
+			{
+				myfile << "Seperator:		  = " << *it << endl;
+			}
+			else if (isOperator(*it))
+			{
+				myfile << "Operator:     		= " << *it << endl;
+			}
+			
+			--temp;
+			counter--;
+			for (int i = 0; i < counter; i++) 
+			{
+				if (isSeparator(*temp))
+				{
+					--temp;
+				}
+				else if (isOperator(*temp))
+				{
+					--temp;
+				}
+				lexeme += *temp;
+				--temp;
+			}
+			reverseStr(lexeme);
+			lexemes.push_back(lexeme);
+			if (checkKeyword(lexeme)) 
+			{
+				myfile <<"Keyword:		= "<< lexeme << endl;
+
+				state = 0;
+			}
+			else 
+			{
+				myfile <<"Identifier:		= "<< lexeme << endl;
+				state = 0;
+			}
+			lexeme.clear();
+			counter = 0;
+		}
+	}
+	myfile.close();
+}
+
+//returns 1 if current lexeme is an operator
+//returns 2 if current lexeme is a keyword
+//returns 3 if current lexeme is a seperator
+//returns 4 if current lexeme is a identifier
+int tokenVal(int position)
+{
+	if (isOperator(lexemes[position]))
+	{
+		LEXNUM++;
+		return 1;
+	}
+	else if (isKeyword(lexemes[position]))
+	{
+		LEXNUM++;
+		return 2;
+	}
+	else if (isSeparator(lexemes[position]))
+	{
+		LEXNUM++;
+		return 3;
+	}
+	else
+		return 4;
+}
+
 int main() {
 
 	char read;
-	string lex;
-	list<char>mylist;
 
-	ifstream infile("input.txt");
+	ifstream infile("Input.txt");
 	infile >> noskipws;
-	if (infile.is_open()) 
+	if (infile.is_open())
 	{
-		while (!infile.eof()) 
+		while (!infile.eof())
 		{
 			infile >> read;
 			mylist.push_back(read);
 		}
 	}
+	infile.close();
 
 	//Remove comments
-	for (list<char>::const_iterator it = mylist.begin(); it != mylist.end(); ++it) 
+	for (list<char>::const_iterator it = mylist.begin(); it != mylist.end(); ++it)
 	{
 		if (*it == '!') {
-			do 
+			do
 			{
-				//it = mylist.erase(it);
-				mylist.pop_back();
+				list<char>::const_iterator temp = it;
 				*it++;
+				mylist.erase(temp);
 			} while (*it != '!');
 			it = mylist.erase(it);
 		}
 	}
-	//Pops remaining exclamation point off of stack
-	mylist.pop_front();
 
-	//Output file without comments
-	ofstream somefile;
+	DFSM("NoComments.txt");
 
-	somefile.open("NoComments.txt");
-	for (list<char>::iterator it = mylist.begin(); it != mylist.end(); ++it) 
-	{
-		cout << *it;
-		somefile << *it;
-	}
-
-
-	cout << "\ndone" << "/t";
-
-	system("PAUSE");
+	cout << endl << endl;
 	return 0;
 }
