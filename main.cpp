@@ -105,17 +105,17 @@ void finalState(int state, string filename) {
 		outfile << "Real:	   = ";
 		//state = 0;
 	}
-	else if (state == 7) {
+	/*else if (state == 7) {
 		outfile << "Operator:	  = ";
 		//state = 0;
 	}
-	else if (state == 8) {
+	else if (state == 😎 {
 		outfile << "Seperator:		  = ";
 		//state = 0;
 	}
 	else {
 		cout << "Error: Invalid final state\n";
-	}
+	}*/
 	outfile.close();
 }
 
@@ -166,9 +166,14 @@ void DFSM(string filename) {
 		{
 			state = 7;
 		}
-		if (state == 6 || state == 7 || state == 8) {
-			finalState(state, "analyzed.txt");
+		if (state == 6 || state == 7 || state == 😎 {
+			//finalState(state, "analyzed.txt");
 			ofstream myfile;
+			if (state == 6) 
+			{
+				myfile << "Real:		  = " << *it << endl;
+				//state = 0;
+			}
 			counter = 0;
 			state = 0;
 		}
