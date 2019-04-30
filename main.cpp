@@ -109,7 +109,7 @@ void finalState(int state, string filename) {
 		outfile << "Operator:	  = ";
 		//state = 0;
 	}
-	else if (state == 😎 {
+	else if (state == 8) {
 		outfile << "Seperator:		  = ";
 		//state = 0;
 	}
@@ -166,7 +166,7 @@ void DFSM(string filename) {
 		{
 			state = 7;
 		}
-		if (state == 6 || state == 7 || state == 😎 {
+		if (state == 6 || state == 7 || state == 8) {
 			//finalState(state, "analyzed.txt");
 			ofstream myfile;
 			if (state == 6) 
