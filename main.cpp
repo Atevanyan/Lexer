@@ -4,6 +4,7 @@
 #include <string>
 #include <list>
 #include <vector>
+#include <stack>
 
 using namespace std;
 
@@ -166,7 +167,7 @@ void DFSM(string filename) {
 		{
 			state = 7;
 		}
-		if (state == 6 || state == 7 || state == 😎) {
+		if (state == 6 || state == 7 || state == 8) {
 			//finalState(state, "analyzed.txt");
 			ofstream myfile;
 			if (state == 6) 
@@ -225,30 +226,120 @@ void DFSM(string filename) {
 	myfile.close();
 }
 
+void TE_prime() {
+
+}
+void add_TE() {
+
+}
+void minus_TE() {
+
+}
+void epsilon() {
+
+}
+void FT_prime() {
+
+}
+
 //returns 1 if current lexeme is an operator
 //returns 2 if current lexeme is a keyword
 //returns 3 if current lexeme is a seperator
 //returns 4 if current lexeme is a identifier
 int tokenVal(int position)
 {
-	if (isOperator(lexemes[position]))
-	{
-		LEXNUM++;
-		return 1;
-	}
-	else if (isKeyword(lexemes[position]))
-	{
-		LEXNUM++;
-		return 2;
-	}
-	else if (isSeparator(lexemes[position]))
-	{
-		LEXNUM++;
-		return 3;
-	}
-	else
-		return 4;
+		if (lexemes[position] == "=")
+		{
+			LEXNUM++;
+			return 1;
+		}
+		else if (lexemes[position] == "-")
+		{
+			LEXNUM++;
+			return 2;
+		}
+		else if (lexemes[position] == "*")
+		{
+			LEXNUM++;
+			return 3;
+		}
+		else if (lexemes[position] == "/")
+		{
+			return 4;
+		}
+		else if (lexemes[position] == "(") 
+		{
+			LEXNUM++;
+			return 5;
+		}
+		else if (lexemes[position] == ")") 
+		{
+			LEXNUM++;
+			return 6;
+		}
+		else if (lexemes[position] == "$") 
+		{
+			LEXNUM++;
+			return 7;
+		}
+		else 
+		{
+			//If it's none of the above, then it's a user defined identifier
+			LEXNUM++;
+			return 0;
+		}
+	
 }
+
+bool syntax(string input) 
+{
+	const int ROW_LENGTH = 8;
+	const int COLS_LENGTH = 4;
+	stack<string> mystack;
+	int table[COLS_LENGTH][ROW_LENGTH] = {
+		//1: E->TE'
+		//2: Q->+TE'
+		//3: Q->-TE'
+		//4: Epsilon case
+		//5: T->FT'
+		//6: R->*FT'
+		//7: R->/FT'
+
+		{ 1,0,0,0,0,1,0,0 },
+		{ 0,2,3,0,0,0,4,4 },
+		{ 5,0,0,0,0,5,0,0 },
+		{ 0,4,4,6,7,0,4,4 },
+
+	};
+	input = input + "$";
+	mystack.push("$");
+	int current_state = 0;
+
+	for (int i = 0; i<input.size(); i++) 
+	{
+
+		if (current_state == 0 && table[current_state][tokenVal(i)] == 1) {
+			TE_prime();
+		}
+		else if (current_state == 1 && table[current_state][tokenVal(i)] == 2) {
+			add_TE();
+		}
+		else if (current_state == 1 && table[current_state][tokenVal(i)] == 3) {
+			minus_TE();
+		}
+		else if (current_state == 1 && table[current_state][tokenVal(i)] == 4) {
+			epsilon();
+		}
+		else if (current_state == 2 && table[current_state][tokenVal(i)] == 5) {
+			FT_prime();
+		}
+		else if (current_state == 3 && table[current_state][tokenVal(i)] == 4) {
+
+		}
+	}
+	return false;
+}
+
 
 int main() {
 
