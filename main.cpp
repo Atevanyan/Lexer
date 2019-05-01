@@ -322,6 +322,15 @@ bool syntax(string input)
 		{ 0,2,3,0,0,0,4,4 },
 		{ 5,0,0,0,0,5,0,0 },
 		{ 0,4,4,6,7,0,4,4 },
+		
+		/*
+	{ 1,0,0,0,0,0,0,0 },
+        { 0,0,0,0,0,2,0,0 },
+        { 0,0,0,0,0,6,0,0 },
+        { 0,3,4,0,0,0,5,0 },
+        { 0,9,9,7,8,0,0,0 },
+        { 11,0,0,0,0,10,0,0 },
+		*/
 
 	};
 	input = input + "$";
@@ -349,6 +358,45 @@ bool syntax(string input)
 		else if (current_state == 3 && table[current_state][tokenVal(i)] == 4) {
 
 		}
+		
+		/*
+	if (current_state == 0 && table[current_state][tokenVal(i)] == 1) {
+            S();
+        }
+        if (current_state == 0 && table[current_state][tokenVal(i)] == 11){
+            terminal();
+        }
+        else if (current_state == 1 && table[current_state][tokenVal(i)] == 3) {
+            add_TQ();
+        }
+        else if (current_state == 1 && table[current_state][tokenVal(i)] == 9) {
+            epsilon();
+        }
+        else if (current_state == 2 && table[current_state][tokenVal(i)] == 4) {
+            minus_TQ();
+        }
+        else if (current_state == 2 && table[current_state][tokenVal(i)] == 9) {
+            epsilon();
+        }
+        else if (current_state == 3 && table[current_state][tokenVal(i)] == 7) {
+            star_FR();
+        }
+        else if (current_state == 4 && table[current_state][tokenVal(i)] == 8) {
+            slash_FR();
+        }
+        else if (current_state == 5 && table[current_state][tokenVal(i)] == 2) {
+            TQ();
+        }
+        else if (current_state == 5 && table[current_state][tokenVal(i)] == 6) {
+            FR();
+        }
+        else if (current_state == 5 && table[current_state][tokenVal(i)] == 10) {
+            terminal();
+        }
+        else if (current_state == 6 && table[current_state][tokenVal(i)] == 5) {
+            epsilon();
+        }
+		*/
 	}
 	return false;
 }
