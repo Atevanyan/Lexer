@@ -166,7 +166,7 @@ void DFSM(string filename) {
 		{
 			state = 7;
 		}
-		if (state == 6 || state == 7 || state == 8) {
+		if (state == 6 || state == 7 || state == 😎) {
 			//finalState(state, "analyzed.txt");
 			ofstream myfile;
 			if (state == 6) 
