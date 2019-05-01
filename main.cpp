@@ -305,6 +305,19 @@ bool syntax(string input)
 		//6: R->*FT'
 		//7: R->/FT'
 
+		/*  This was on 3.13 on page 117.
+		1: E->TQ
+		2: Q->+TQ
+		3: Q->-TQ
+		4: Q->epsilon
+		5: T->FR
+		6: R->*FR
+		7: R->/FR
+		8: R->epsilon
+		9: F->(E)
+		10:F->i
+		*/
+		
 		{ 1,0,0,0,0,1,0,0 },
 		{ 0,2,3,0,0,0,4,4 },
 		{ 5,0,0,0,0,5,0,0 },
